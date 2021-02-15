@@ -19,6 +19,17 @@ class Todo(db.Model):
 
 db.create_all()
 
+@app.route('/todos/<todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+  try:
+    Todo.query.filter_by(id=todo_id).delete()
+    db.session.commit()
+  except:
+    db.session.rollback()
+  finally:
+    db.session.close()
+  return jsonify({ 'success': True})
+
 @app.route('/todos/create', methods=['POST'])
 def create_todo():
   error = False
@@ -52,7 +63,7 @@ def set_completed_todo(todo_id):
     db.session.rollback()
   finally:
     db.session.close()
-  return redirect(url_for('index'))  
+  return redirect(url_for('index')) 
 
 @app.route('/')
 def index():
